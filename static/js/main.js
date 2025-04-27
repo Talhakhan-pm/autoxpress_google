@@ -49,29 +49,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchFeedbackContainer = document.createElement('div');
     searchFeedbackContainer.className = 'search-feedback mt-2 d-none';
     searchFeedbackContainer.innerHTML = `
-        <div class="card">
-            <div class="card-body p-2">
-                <div class="small mb-1 text-muted">Detected vehicle information:</div>
-                <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-primary year-badge">Year: <span>--</span></span>
-                    <span class="badge bg-success make-badge">Make: <span>--</span></span>
-                    <span class="badge bg-info text-dark model-badge">Model: <span>--</span></span>
-                    <span class="badge bg-warning text-dark part-badge">Part: <span>--</span></span>
-                    <span class="badge bg-secondary text-white position-badge d-none">Position: <span>--</span></span>
-                    <span class="badge bg-danger text-white engine-badge d-none">Engine: <span>--</span></span>
+    <div class="card">
+        <div class="card-body p-2">
+            <div class="small mb-1 text-muted">Detected vehicle information:</div>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge border border-primary text-primary year-badge">Year: <span>--</span></span>
+                <span class="badge border border-success text-success make-badge">Make: <span>--</span></span>
+                <span class="badge border border-info text-info model-badge">Model: <span>--</span></span>
+                <span class="badge border border-warning text-warning part-badge">Part: <span>--</span></span>
+                <span class="badge border border-secondary text-secondary position-badge d-none">Position: <span>--</span></span>
+                <span class="badge border border-danger text-danger engine-badge d-none">Engine: <span>--</span></span>
+            </div>
+            <div class="confidence-meter mt-2 mb-1">
+                <div class="progress" style="height: 4px;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
                 </div>
-                <div class="confidence-meter mt-2 mb-1">
-                    <div class="progress" style="height: 4px;">
-                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-1">
-                        <small class="text-muted">Search confidence</small>
-                        <small class="confidence-value text-muted">0%</small>
-                    </div>
+                <div class="d-flex justify-content-between mt-1">
+                    <small class="text-muted">Search confidence</small>
+                    <small class="confidence-value text-muted">0%</small>
                 </div>
             </div>
         </div>
-    `;
+    </div>
+`;
     
     // Insert the feedback container after the search form
     searchForm.parentNode.insertBefore(searchFeedbackContainer, searchForm.nextSibling);
@@ -819,7 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Disable the search button and show loading
             const activeSearchButton = isSingleField ? singleSearchButton : searchButton;
             activeSearchButton.disabled = true;
-            activeSearchButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Finding Parts...';
+            activeSearchButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="width: 1rem; height: 1rem;" role="status" aria-hidden="true"></span><span style="vertical-align: middle;">Finding Parts...</span>';
             
             // Reset UI for search results only
             validationError.classList.add('d-none');
@@ -1268,4 +1268,59 @@ document.addEventListener('DOMContentLoaded', function() {
     imageModal.style.alignItems = 'center';
     imageModal.style.justifyContent = 'center';
   }
+  
+});
+
+/**
+ * This code replaces the button color override section at the end of main.js
+ * Remove these lines from the original file and use the class-based approach instead
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove any direct style overrides for buttons
+    // Instead of manually styling buttons in JavaScript, we'll let CSS handle it through proper classes
+    
+    // Ensure all "Find Parts" buttons have the btn-danger class instead of btn-primary
+    const findPartsButtons = document.querySelectorAll('#find-parts-btn, [id$="find-parts"], button[type="submit"]');
+    findPartsButtons.forEach(button => {
+        if (button.classList.contains('btn-primary')) {
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-danger');
+        }
+    });
+    
+    // Make sure that View Details buttons have the correct classes
+    const viewDetailsButtons = document.querySelectorAll('.view-details, .product-card .btn, .product-actions .btn');
+    viewDetailsButtons.forEach(button => {
+        if (button.classList.contains('btn-primary')) {
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-danger');
+        }
+    });
+    
+    // Use MutationObserver to handle dynamically added buttons
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) { // ELEMENT_NODE
+                        // Find new buttons inside the added node
+                        const newButtons = node.querySelectorAll('.btn-primary, .view-details, .product-card .btn');
+                        newButtons.forEach(button => {
+                            if (button.classList.contains('btn-primary')) {
+                                button.classList.remove('btn-primary');
+                                button.classList.add('btn-danger');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+    // Observe the entire document body for changes
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 });
